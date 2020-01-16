@@ -5,4 +5,6 @@
 ## 3. Databas med ER-diagram (Bild)
 ## 4. Arkitektur (Beskriv filer och mappar - vad gör/inehåller de?)
 
-Hej detta är ett test
+Hej detta är ett test okej
+
+Nu har vi lite fler saker här
