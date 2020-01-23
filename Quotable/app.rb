@@ -3,3 +3,4 @@ require "sinatra"
 require "sqlite3"
 require "bcrypt"
 enable :sessions
+
