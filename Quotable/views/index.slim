@@ -1,14 +1,13 @@
 h1 Startsida
 
-h2 Registrera dig
-form action="/register" method="post"    
-    <input type="text" name="username" placeholder="Användarnamn" required>
-    <input type="password" name="password" placeholder="Lösenord" required>
-    <input type="password" name="password_verify" placeholder="Verifiera lösenord"required>
+h3 Registera dig!
+form action="/user/new" method="get"    
     input type="submit" value="Registrera dig"
 
-h2 Logga in
-form action="/user/" method="post"    
-    input type="text" name="username" placeholder="Användarnamn"
-    input type="password" name="password" placeholder="Lösenord"
+h3 Logga in!
+form action="/user/login" method="get"    
     input type="submit" value="Logga in"
+
+h3 Fortsätt utan att logga in!
+form action="/quotes" method="get"
+    input type="submit" value="Se quotes"

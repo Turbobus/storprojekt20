@@ -10,6 +10,14 @@ get("/") do
     slim(:index)
 end
 
-post("/register") do
+get("/user/new") do
     slim(:"user/new")
+end
+
+get("/user/login") do
+    slim(:"user/login")
+end
+
+get("/quotes") do 
+    slim(:"quotes/index")
 end
