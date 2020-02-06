@@ -29,20 +29,20 @@ post("/register") do
     starting_quota = 1
 
     if password != password_verify || username == "" || password == ""
-        redirect("/password_do_not_match")                                      #Måste ändra   OBS!!!!!
+        redirect("/empty_or_do_not_match")                                      #Måste ändra   OBS!!!!!
     end
     
     only_integer = password.scan(/\D/).empty?
     only_letters = password.scan(/\d/).empty? 
     if only_integer == true || only_letters == true || password.length > 3
-        redirect("/password_do_not_match")         #OBS ska ändras   Blir här när det bara är siffror eller bara bokstäver eller när det är under 4 tecken
+        redirect("/only_integer_or_letter_under_lengt3")         #OBS ska ändras   Blir här när det bara är siffror eller bara bokstäver eller när det är under 4 tecken
     end
 
     exist = db.execute("SELECT username FROM user WHERE username LIKE ?", username)
     password_scramble = BCrypt::Password.create(password)
 
     if exist.empty?
-        db.execute("INSERT INTO user(username, password, quota) VALUES(?, ?)", username, password_scramble, starting_quota)
+        db.execute("INSERT INTO user(username, password, quota) VALUES(?, ?, ?)", username, password_scramble, 1)
     else
         redirect("/username_exist")                                            #Måste ändra   OBS!!!!!
     end
