@@ -2,9 +2,8 @@ require "slim"
 require "sinatra"
 require "sqlite3"
 require "bcrypt"
+require_relative "./model.rb"
 enable :sessions
-db = SQLite3::Database.new("db/quotables.db")
-db.results_as_hash = true
 
 get("/") do 
     slim(:index)
@@ -18,31 +17,31 @@ get("/user/") do
     slim(:"user/index")
 end
 
-get("/quotes/") do 
-    slim(:"quotes/index")
+get("/quotes/") do
+    username = username(session[:logged_in]) 
+    slim(:"quotes/index", locals:{username: username})
 end
 
 post("/user/new") do 
     username = params[:username]
     password = params[:password]
     password_verify = params[:password_verify]
-    starting_quota = 1
 
-    if password != password_verify || username == "" || password == "" || username == ""
+    controller = input_chek(username, password, password_verify)
+    if  controller == "input_true"
         redirect("/empty_or_do_not_match")                                      #Måste ändra   OBS!!!!!
     end
     
-    only_integer = password.scan(/\D/).empty?
-    only_letters = password.scan(/\d/).empty? 
-    if only_integer == true || only_letters == true || password.length < 4
+    if controller == "password_true"
         redirect("/only_integer_or_letter_under_lengt3")         #OBS ska ändras   Blir här när det bara är siffror eller bara bokstäver eller när det är under 4 tecken
     end
 
-    exist = db.execute("SELECT username FROM user WHERE username LIKE ?", username)
-    password_scramble = BCrypt::Password.create(password)
+    exist = get_from_db("username", "user", "username", username) 
 
     if exist.empty?
-        db.execute("INSERT INTO user(username, password, quota) VALUES(?, ?, ?)", username, password_scramble, 1)
+        insert_into_db("user", "username, password, quota", "#{username}, #{controller}, 1")
+
+        session[:logged_in] = get_from_db("user_id", "user", "username", username)[0]["user_id"])
     else
         redirect("/username_exist")                                            #Måste ändra   OBS!!!!!
     end
@@ -68,4 +67,15 @@ post("/user") do
     else
         redirect("/Password incorrect")                  #Måste ändra OBS!!!!!!!
     end
+end
+
+#Helper funktioner nedanför
+
+def username(user_id)
+    db = SQLite3::Database.new("db/quotables.db")
+    db.results_as_hash = true
+    if user_id != nil
+        username = db.execute("SELECT username FROM user WHERE user_id LIKE ?", user_id)[0]["username"]
+    end
+    return username
 end
