@@ -4,6 +4,8 @@ require "sqlite3"
 require "bcrypt"
 require_relative "./model.rb"
 enable :sessions
+db = SQLite3::Database.new("db/quotables.db")
+db.results_as_hash = true
 
 get("/") do 
     slim(:index)
@@ -37,11 +39,10 @@ post("/user/new") do
     end
 
     exist = get_from_db("username", "user", "username", username) 
-
+    p controller
     if exist.empty?
-        insert_into_db("user", "username, password, quota", "#{username}, #{controller}, 1")
-
-        session[:logged_in] = get_from_db("user_id", "user", "username", username)[0]["user_id"])
+        insert_into_db("user", "username, password, quota", "?, ?, ?", "#{username}, #{controller}, 1")
+        session[:logged_in] = get_from_db("user_id", "user", "username", username[0]["user_id"])
     else
         redirect("/username_exist")                                            #Måste ändra   OBS!!!!!
     end
