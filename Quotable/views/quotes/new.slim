@@ -1,0 +1,21 @@
+h1 Du ska bara vara här ifall du är Admin. Ifall du inte är det kontakta någon trevlig person
+
+h2 Här kan du se origins och dess ID
+form action="/origin/" method="get"
+        input type="submit" value="Se på olika origins som redan finns och ta reda på dess origin_id"
+
+h2 Skapa en ny quote
+form action="/quotes/new" method="post"    
+    <input type="text" name="quote" placeholder="Quote" required> 
+    br
+    input type="number" id="price" name="price" placeholder="Pris i quota"
+    br
+    input type="number" id="earnings" name="earnings" placeholder="Hur mycket man tjänar"
+    br
+    input type="number" id="origin_id" name="origin_id" placeholder="Origin_id"
+    br
+    input type="submit" value="Lägg ut ny quote"
+
+h2 Skapa en ny origin
+form action="/origin/new/" method="get"
+    input type="submit" value="Gå till stället där du skapar nya origins"

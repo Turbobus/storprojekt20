@@ -1,5 +1,8 @@
 h1 Test quotes
 h2 Du har just nu user_id #{session[:logged_in]} och användarnamn #{username}
+-if admin == 1
+    form action="/quotes/new/" method="get"
+        input type="submit" value="Admin"
 
 
 h3 Gå tillbaka

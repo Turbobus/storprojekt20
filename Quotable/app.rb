@@ -23,9 +23,21 @@ end
 get("/quotes/") do
     if session[:logged_in] != nil
         username = get_from_db("username", "user", "user_id", session[:logged_in])[0]["username"]
+        admin = get_from_db("admin", "user", "user_id", session[:logged_in])[0]["admin"]
     end
+    slim(:"quotes/index", locals:{username: username, admin: admin})
+end
 
-    slim(:"quotes/index", locals:{username: username})
+get("/quotes/new/") do 
+    slim(:"quotes/new")
+end
+
+get("/origin/") do
+    slim(:"origin/index")
+end
+
+get("/origin/new/") do 
+    slim(:"origin/new")
 end
 
 post("/user/new") do 
@@ -73,6 +85,10 @@ post("/user") do
     else
         redirect("/Password incorrect")                  #Måste ändra OBS!!!!!!!
     end
+end
+
+post("/quotes/new") do
+
 end
 
 #Helper funktioner nedanför
