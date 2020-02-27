@@ -27,7 +27,15 @@ end
 
 def insert_into_db(table, colums, numbers, values)
     db = conect_to_db()
-    p values
     db.execute("INSERT INTO #{table} (#{colums}) VALUES(#{numbers})", values)
+end
+
+def password_checker(password, username)
+    controll_password = get_from_db("password", "user", "username", username)[0]["password"]
+    if BCrypt::Password.new(controll_password) == password
+        return true
+    else
+        return false                  
+    end
 end
 
