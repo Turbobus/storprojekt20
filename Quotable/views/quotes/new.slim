@@ -12,7 +12,10 @@ form action="/quotes/new" method="post"
     br
     input type="number" id="earnings" name="earnings" placeholder="Hur mycket man tjänar"
     br
-    input type="number" id="origin_id" name="origin_id" placeholder="Origin_id"
+    select name="origin_id"
+        -origin.each do |origin|
+            -p origin
+            option value="#{origin["origin_id"]}" Origin_id:#{origin["origin_id"]} | Person: #{origin["person"]}
     br
     input type="submit" value="Lägg ut ny quote"
 

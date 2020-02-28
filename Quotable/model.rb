@@ -19,15 +19,15 @@ def input_chek(username, password, password_verify)
     return BCrypt::Password.create(password)
 end
 
-def get_from_db(colum, table, condition, value)
+def get_from_db(colum, table, condition = nil, value = nil)
     db = conect_to_db()
-    information = db.execute("SELECT #{colum} FROM #{table} WHERE #{condition} LIKE ?", value)
+    information = db.execute("SELECT #{colum} FROM #{table}#{condition == nil ? "" : " WHERE #{condition} LIKE ?"}", value)
     return information
 end
 
 def insert_into_db(table, colums, numbers, values)
     db = conect_to_db()
-    db.execute("INSERT INTO #{table} (#{colums}) VALUES(#{numbers})", values)
+    p db.execute("INSERT INTO #{table} (#{colums}) VALUES(#{numbers})", values)
 end
 
 def password_checker(password, username)

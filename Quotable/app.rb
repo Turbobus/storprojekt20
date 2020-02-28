@@ -25,11 +25,13 @@ get("/quotes/") do
         username = get_from_db("username", "user", "user_id", session[:logged_in])[0]["username"]
         admin = get_from_db("admin", "user", "user_id", session[:logged_in])[0]["admin"]
     end
+    quotes = get_from_db("admin", "user", "user_id", session[:logged_in])
     slim(:"quotes/index", locals:{username: username, admin: admin})
 end
 
-get("/quotes/new/") do 
-    slim(:"quotes/new")
+get("/quotes/new/") do
+    origin = get_from_db("origin_id, person", "origin") 
+    slim(:"quotes/new", locals:{origin: origin})
 end
 
 get("/origin/") do
@@ -87,8 +89,26 @@ post("/user") do
     end
 end
 
-post("/quotes/new") do
-
+post("/quotes") do
+    session[:logged_in] = nil
+    redirect("/")
 end
 
+post("/quotes/new") do
+    quote = params[:quote]
+    price = params[:price]
+    earnings = params[:earnings]
+    origin_id = params[:origin_id]
+
+    insert_into_db("quotes", "quote, price, earnings, origin_id", "?, ?, ?, ?", ["#{quote}", "#{price}", "#{earnings}", "#{origin_id}"])
+    redirect("/quotes/new/")
+end
+
+post("/origin/new") do 
+    person = params[:person]
+    backstory = params[:backstory]
+    
+    insert_into_db("origin", "person, backstory", "?, ?", ["#{person}", "#{backstory}"])
+    redirect("/origin/new/")
+end
 #Helper funktioner nedanför

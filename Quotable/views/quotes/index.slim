@@ -1,10 +1,12 @@
-h1 Test quotes
-h2 Du har just nu user_id #{session[:logged_in]} och användarnamn #{username}
--if admin == 1
-    form action="/quotes/new/" method="get"
-        input type="submit" value="Admin"
+
+-if session[:logged_in] != nil
+    h4 Du har just nu user_id #{session[:logged_in]} och användarnamn #{username}
+    -if admin == 1
+        form action="/quotes/new/" method="get"
+            input type="submit" value="Admin"
+    form action="/quotes" method="post"    
+        input type="submit" value="Logga ut"
+
+h1 Här under finns finner man de quotes som finns
 
 
-h3 Gå tillbaka
-form action="/" method="get"    
-    input type="submit" value="Gå tillbaka"
