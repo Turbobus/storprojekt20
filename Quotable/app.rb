@@ -25,12 +25,21 @@ get("/quotes/") do
         username = get_from_db("username", "user", "user_id", session[:logged_in])[0]["username"]
         admin = get_from_db("admin", "user", "user_id", session[:logged_in])[0]["admin"]
     end
-    quotes = get_from_db("admin", "user", "user_id", session[:logged_in])
-    slim(:"quotes/index", locals:{username: username, admin: admin})
+    quotes = get_from_db("quote_id, quote, price", "quotes")
+    slim(:"quotes/index", locals:{username: username, admin: admin, quotes: quotes})
+end
+
+get("/quotes/:quote_id") do
+    params["quote_id"]
+    slim(:"quotes/show")
+end
+
+get("/cart/") do 
+slim(:"cart/index")
 end
 
 get("/quotes/new/") do
-    origin = get_from_db("origin_id, person", "origin") 
+    origin = get_from_db("origin_id, person, backstory", "origin") 
     slim(:"quotes/new", locals:{origin: origin})
 end
 
@@ -110,5 +119,12 @@ post("/origin/new") do
     
     insert_into_db("origin", "person, backstory", "?, ?", ["#{person}", "#{backstory}"])
     redirect("/origin/new/")
+end
+
+post("/cart/new") do 
+    user_id = session[:logged_in]
+    quote_id = params[:quote_id]
+    insert_into_db("cart", "user_id, quote_id", "?, ?", ["#{user_id}", "#{quote_id}"])
+    redirect("/quotes/")
 end
 #Helper funktioner nedanför

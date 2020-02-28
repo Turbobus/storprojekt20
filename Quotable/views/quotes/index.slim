@@ -7,6 +7,14 @@
     form action="/quotes" method="post"    
         input type="submit" value="Logga ut"
 
-h1 Här under finns finner man de quotes som finns
-
+h1 Här under finner man de quotes som finns
+-quotes.each do |quote|
+    section
+        a href="/quotes/#{quote["quote_id"]}" #{quote["quote"]} 
+        br
+        p Pris: #{quote["price"]} quota
+        form action="/cart/new" method="post"    
+            button name="quote_id" type="submit" value="#{quote["quote_id"]}" Lägg i kundvagnen
+        br
+        br
 

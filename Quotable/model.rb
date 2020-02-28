@@ -27,7 +27,7 @@ end
 
 def insert_into_db(table, colums, numbers, values)
     db = conect_to_db()
-    p db.execute("INSERT INTO #{table} (#{colums}) VALUES(#{numbers})", values)
+    db.execute("INSERT INTO #{table} (#{colums}) VALUES(#{numbers})", values)
 end
 
 def password_checker(password, username)
