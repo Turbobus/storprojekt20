@@ -51,7 +51,7 @@ end
 
 def delete_db(table, condition, value)
     db = conect_to_db
-    db.execute("DELETE FROM #{table} WHERE #{condition} LIKE ?" value)
+    db.execute("DELETE FROM #{table} WHERE #{condition} LIKE ?", value)
 end
 
 def join_from_db(colums, table1, table2, togheter, condition, value)

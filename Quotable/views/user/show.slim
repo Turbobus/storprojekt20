@@ -1,0 +1,7 @@
+h1 Här är ditt biblotek
+-user_library.each do |quote|
+    section
+        a href="/quotes/#{quote["quote_id"]}" #{quote["quote"]} 
+        br
+        p Vad du får: #{quote["earnings"]} quota
+        br

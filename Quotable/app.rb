@@ -22,7 +22,9 @@ get("/user/new/") do
 end
 
 get("/user/show/") do
-    slim(:"user/new")
+    user_library = join_from_db("quotes.quote_id, quote, earnings", "quotes", "library", "library.quote_id = quotes.quote_id", "library.user_id", session[:logged_in])
+
+    slim(:"user/show", locals:{user_library: user_library})
 end
 
 get("/quotes/") do
@@ -116,15 +118,17 @@ end
 post("/library/new") do 
     user_cart = params[:user_cart].split('').map(&:to_i)
     total_price = params[:total_price].to_i
-    user_quota = get_from_db("quota", "user", "user_id", session[:logged_in])
-    
+    user_quota = get_from_db("quota", "user", "user_id", session[:logged_in])[0]["quota"]
+
     if total_price > user_quota
+        p "det gick inte"
         redirect("/You dont have the quota to do that")      #Måste ändra här med   OBS!!!!!!!!!!!
     end
     new_quota = user_quota - total_price
     update_db("user", "quota = #{new_quota}", "user_id", session[:logged_in])
     big_insert_into_db("library", "cart", "user_id", session[:logged_in])
     delete_db("cart", "user_id", session[:logged_in])
+    redirect("/cart/")
 end
 
 post("/quotes") do
