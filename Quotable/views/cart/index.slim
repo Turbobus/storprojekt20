@@ -1,1 +1,8 @@
 h1 Välkomen till din kundvagn
+h2 Här under hittar du de quotes du har laggt i kundvagnen
+-user_cart.each do |quote|
+    section
+        a href="/quotes/#{quote["quote_id"]}" #{quote["quote"]} 
+        br
+        p Pris: #{quote["price"]} quota
+        br

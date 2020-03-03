@@ -39,3 +39,8 @@ def password_checker(password, username)
     end
 end
 
+def join_from_db(colums, table1, table2, togheter, condition, value)
+    db = conect_to_db()
+    information = db.execute("SELECT #{colums} FROM #{table1} INNER JOIN #{table2} ON #{togheter} WHERE #{condition} LIKE ?", value)
+    return information
+end

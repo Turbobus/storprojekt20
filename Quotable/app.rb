@@ -4,6 +4,7 @@ require "sqlite3"
 require "bcrypt"
 require "byebug"
 require_relative "./model.rb"
+require "sinatra/reloader"
 enable :sessions
 db = SQLite3::Database.new("db/quotables.db")
 db.results_as_hash = true
@@ -35,7 +36,8 @@ get("/quotes/:quote_id") do
 end
 
 get("/cart/") do 
-slim(:"cart/index")
+    user_cart = join_from_db("quote, price, earnings", "quotes", "cart", "cart.quote_id = quotes.quote_id", "cart.user_id", session[:logged_in])
+    slim(:"cart/index", locals:{user_cart: user_cart})
 end
 
 get("/quotes/new/") do
