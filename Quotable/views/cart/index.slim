@@ -6,3 +6,7 @@ h2 Här under hittar du de quotes du har laggt i kundvagnen
         br
         p Pris: #{quote["price"]} quota
         br
+
+form action="/library/new" method="post"
+    input type="hidden" name="total_price" value="#{total_price}"
+    button name="user_cart" type="submit" value="#{quote_ids}"  Köp allt i kundvagnen

@@ -19,6 +19,15 @@ def input_chek(username, password, password_verify)
     return BCrypt::Password.create(password)
 end
 
+def password_checker(password, username)
+    controll_password = get_from_db("password", "user", "username", username)[0]["password"]
+    if BCrypt::Password.new(controll_password) == password
+        return true
+    else
+        return false                  
+    end
+end
+
 def get_from_db(colum, table, condition = nil, value = nil)
     db = conect_to_db()
     information = db.execute("SELECT #{colum} FROM #{table}#{condition == nil ? "" : " WHERE #{condition} LIKE ?"}", value)
@@ -30,13 +39,19 @@ def insert_into_db(table, colums, numbers, values)
     db.execute("INSERT INTO #{table} (#{colums}) VALUES(#{numbers})", values)
 end
 
-def password_checker(password, username)
-    controll_password = get_from_db("password", "user", "username", username)[0]["password"]
-    if BCrypt::Password.new(controll_password) == password
-        return true
-    else
-        return false                  
-    end
+def big_insert_into_db(newtable, oldtable, condition, value)
+    db = conect_to_db()
+    db.execute("INSERT INTO #{newtable} SELECT * FROM #{oldtable} WHERE #{condition} LIKE ?", value)
+end
+
+def update_db(table, colum, condition, value)
+    db = conect_to_db()
+    db.execute("UPDATE #{table} SET #{colum} WHERE #{condition} LIKE ?", value)
+end
+
+def delete_db(table, condition, value)
+    db = conect_to_db
+    db.execute("DELETE FROM #{table} WHERE #{condition} LIKE ?" value)
 end
 
 def join_from_db(colums, table1, table2, togheter, condition, value)

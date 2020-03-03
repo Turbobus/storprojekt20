@@ -10,4 +10,6 @@ html lang="sv"
         -if session[:logged_in] != nil
             p Du är just nu inloggad 
             a href="/cart/" Din kundvagn
+            br
+            a href="/user/show/" Ditt bilbotek
         ==yield

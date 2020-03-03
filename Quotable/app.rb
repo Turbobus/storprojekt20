@@ -13,12 +13,16 @@ get("/") do
     slim(:index)
 end
 
+get("/user/") do
+    slim(:"user/index")
+end
+
 get("/user/new/") do
     slim(:"user/new")
 end
 
-get("/user/") do
-    slim(:"user/index")
+get("/user/show/") do
+    slim(:"user/new")
 end
 
 get("/quotes/") do
@@ -31,13 +35,22 @@ get("/quotes/") do
 end
 
 get("/quotes/:quote_id") do
-    params["quote_id"]
-    slim(:"quotes/show")
+    quote_id = params["quote_id"]
+    #Verifiering av quote_id behövs att göras så att det faktisk finns där
+    quote_information = join_from_db("quote, price, earnings, person, backstory", "quotes", "origin", "quotes.origin_id = origin.origin_id", "quotes.quote_id", "#{quote_id}")[0]
+    slim(:"quotes/show", locals:{quote_information: quote_information})
 end
 
 get("/cart/") do 
-    user_cart = join_from_db("quote, price, earnings", "quotes", "cart", "cart.quote_id = quotes.quote_id", "cart.user_id", session[:logged_in])
-    slim(:"cart/index", locals:{user_cart: user_cart})
+    user_cart = join_from_db("quotes.quote_id, quote, price, earnings", "quotes", "cart", "cart.quote_id = quotes.quote_id", "cart.user_id", session[:logged_in])
+    
+    quote_ids = ""
+    total_price = 0
+    user_cart.each do |quote|
+        quote_ids += quote["quote_id"].to_s
+        total_price += quote["price"]
+    end
+    slim(:"cart/index", locals:{user_cart: user_cart, quote_ids: quote_ids, total_price: total_price})
 end
 
 get("/quotes/new/") do
@@ -51,6 +64,28 @@ end
 
 get("/origin/new/") do 
     slim(:"origin/new")
+end
+
+post("/user") do
+    username = params[:username]
+    password = params[:password]
+    session[:logged_in] = nil
+
+    #Kollar ifall Användaren finns
+    exist = get_from_db("username", "user", "username", username)
+    if exist.empty?
+        redirect("/Användare existerar inte")               #MÅSTE ändra OBS!!!!!!!!!!!!
+    end
+
+    #Hämtar användarens lödsenord för jämförelse
+    password_chek = password_checker(password, username)
+    
+    if password_chek == true
+        session[:logged_in] = get_from_db("user_id", "user", "username", username)[0]["user_id"]
+        redirect("/quotes/")
+    else
+        redirect("/Password incorrect")                  #Måste ändra OBS!!!!!!!
+    end
 end
 
 post("/user/new") do 
@@ -78,26 +113,18 @@ post("/user/new") do
     redirect("/quotes/")
 end
 
-post("/user") do
-    username = params[:username]
-    password = params[:password]
-    session[:logged_in] = nil
-
-    #Kollar ifall Användaren finns
-    exist = get_from_db("username", "user", "username", username)
-    if exist.empty?
-        redirect("/Användare existerar inte")               #MÅSTE ändra OBS!!!!!!!!!!!!
-    end
-
-    #Hämtar användarens lödsenord för jämförelse
-    password_chek = password_checker(password, username)
+post("/library/new") do 
+    user_cart = params[:user_cart].split('').map(&:to_i)
+    total_price = params[:total_price].to_i
+    user_quota = get_from_db("quota", "user", "user_id", session[:logged_in])
     
-    if password_chek == true
-        session[:logged_in] = get_from_db("user_id", "user", "username", username)[0]["user_id"]
-        redirect("/quotes/")
-    else
-        redirect("/Password incorrect")                  #Måste ändra OBS!!!!!!!
+    if total_price > user_quota
+        redirect("/You dont have the quota to do that")      #Måste ändra här med   OBS!!!!!!!!!!!
     end
+    new_quota = user_quota - total_price
+    update_db("user", "quota = #{new_quota}", "user_id", session[:logged_in])
+    big_insert_into_db("library", "cart", "user_id", session[:logged_in])
+    delete_db("cart", "user_id", session[:logged_in])
 end
 
 post("/quotes") do
