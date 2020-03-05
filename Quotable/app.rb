@@ -23,8 +23,10 @@ end
 
 get("/user/show/") do
     user_library = join_from_db("quotes.quote_id, quote, earnings", "quotes", "library", "library.quote_id = quotes.quote_id", "library.user_id", session[:logged_in])
+    said_quote = session[:said_quote]
+    session[:said_quote] = nil
 
-    slim(:"user/show", locals:{user_library: user_library})
+    slim(:"user/show", locals:{user_library: user_library, said_quote: said_quote})
 end
 
 get("/quotes/") do
@@ -117,13 +119,10 @@ end
 
 post("/user/show") do 
     quote_id = params[:quote_id]
-    p quote_id
     earnings = get_from_db("earnings", "quotes", "quote_id", quote_id)[0]["earnings"]
-    quote = params[:quote]        #Behövs kanske inte
+    session[:said_quote] = params[:quote]       
     
-
     update_db("user", "quota = quota + #{earnings}", "user_id", session[:logged_in])
-
     redirect("/user/show/")
 end
 
