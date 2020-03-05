@@ -171,6 +171,11 @@ post("/origin/new") do
     redirect("/origin/new/")
 end
 
+post("/cart") do 
+    quote_id = params[:quote_id]
+    delete_db("cart", "quote_id", session[:logged_in])
+end
+
 post("/cart/new") do 
     user_id = session[:logged_in]
     quote_id = params[:quote_id]

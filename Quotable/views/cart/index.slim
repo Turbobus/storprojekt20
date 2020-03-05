@@ -5,7 +5,8 @@ h2 Här under hittar du de quotes du har laggt i kundvagnen
         a href="/quotes/#{quote["quote_id"]}" #{quote["quote"]} 
         br
         p Pris: #{quote["price"]} quota
-        br
+        form action="/cart" method="post"
+            button name="quote_id" type="submit" value="#{quote["quote_id"]}"  Ta bort ur kundvagnen
 
 form action="/library/new" method="post"
     input type="hidden" name="total_price" value="#{total_price}"
