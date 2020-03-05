@@ -4,4 +4,8 @@ h1 Här är ditt biblotek
         a href="/quotes/#{quote["quote_id"]}" #{quote["quote"]} 
         br
         p Vad du får: #{quote["earnings"]} quota
+        form action="/user/show" method="post"
+            input type="hidden" name="quote_id" value="#{quote["quote_id"]}"
+            button name="quote" type="submit" value="#{quote["quote"]}"  Säg denna quote
+        br
         br

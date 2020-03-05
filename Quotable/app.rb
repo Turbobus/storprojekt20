@@ -115,17 +115,35 @@ post("/user/new") do
     redirect("/quotes/")
 end
 
+post("/user/show") do 
+    quote_id = params[:quote_id]
+    p quote_id
+    earnings = get_from_db("earnings", "quotes", "quote_id", quote_id)[0]["earnings"]
+    quote = params[:quote]        #Behövs kanske inte
+    
+
+    update_db("user", "quota = quota + #{earnings}", "user_id", session[:logged_in])
+
+    redirect("/user/show/")
+end
+
 post("/library/new") do 
     user_cart = params[:user_cart].split('').map(&:to_i)
-    total_price = params[:total_price].to_i
+    prices = join_from_db("price", "quotes", "cart", "cart.quote_id = quotes.quote_id", "cart.user_id", session[:logged_in])
+    total_price = 0
+    
+    prices.each do |price|
+        total_price += price["price"]
+    end
+
     user_quota = get_from_db("quota", "user", "user_id", session[:logged_in])[0]["quota"]
 
     if total_price > user_quota
         p "det gick inte"
         redirect("/You dont have the quota to do that")      #Måste ändra här med   OBS!!!!!!!!!!!
     end
-    new_quota = user_quota - total_price
-    update_db("user", "quota = #{new_quota}", "user_id", session[:logged_in])
+    
+    update_db("user", "quota = quota - #{total_price}", "user_id", session[:logged_in])
     big_insert_into_db("library", "cart", "user_id", session[:logged_in])
     delete_db("cart", "user_id", session[:logged_in])
     redirect("/cart/")
