@@ -28,6 +28,15 @@ def password_checker(password, username)
     end
 end
 
+def is_admin(user_id)
+    admin = get_from_db("admin", "user", "user_id", session[:logged_in])[0]["admin"] if session[:logged_in] != nil
+    if admin == 1 
+        return true
+    else
+        return false
+    end
+end
+
 def get_from_db(colum, table, condition = nil, value = nil)
     db = conect_to_db()
     information = db.execute("SELECT #{colum} FROM #{table}#{condition == nil ? "" : " WHERE #{condition} LIKE ?"}", value)
@@ -49,9 +58,9 @@ def update_db(table, colum, condition, value)
     db.execute("UPDATE #{table} SET #{colum} WHERE #{condition} LIKE ?", value)
 end
 
-def delete_db(table, condition, value)
+def delete_db(table, condition1, value1, condition2, value2)
     db = conect_to_db
-    db.execute("DELETE FROM #{table} WHERE #{condition} LIKE ?", value)
+    db.execute("DELETE FROM #{table} WHERE #{condition1} LIKE ? AND #{condition2} LIKE ?", value1, value2)
 end
 
 def join_from_db(colums, table1, table2, togheter, condition, value)

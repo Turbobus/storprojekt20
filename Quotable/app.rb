@@ -45,6 +45,16 @@ get("/quotes/:quote_id") do
     slim(:"quotes/show", locals:{quote_information: quote_information})
 end
 
+get("/quotes/new/") do
+    admin = is_admin(session[:logged_in]) 
+    if admin == true
+        origin = get_from_db("origin_id, person, backstory", "origin")
+    else
+       redirect("/quotes/") 
+    end
+    slim(:"quotes/new", locals:{origin: origin})
+end
+
 get("/cart/") do 
     user_cart = join_from_db("quotes.quote_id, quote, price, earnings", "quotes", "cart", "cart.quote_id = quotes.quote_id", "cart.user_id", session[:logged_in])
     
@@ -57,17 +67,13 @@ get("/cart/") do
     slim(:"cart/index", locals:{user_cart: user_cart, quote_ids: quote_ids, total_price: total_price})
 end
 
-get("/quotes/new/") do
-    origin = get_from_db("origin_id, person, backstory", "origin") 
-    slim(:"quotes/new", locals:{origin: origin})
-end
-
-get("/origin/") do
-    slim(:"origin/index")
-end
-
 get("/origin/new/") do 
-    slim(:"origin/new")
+    admin = is_admin(session[:logged_in]) 
+    if admin == true
+       slim(:"origin/new") 
+    else
+       redirect("/quotes/") 
+    end
 end
 
 post("/user") do
@@ -144,7 +150,7 @@ post("/library/new") do
     
     update_db("user", "quota = quota - #{total_price}", "user_id", session[:logged_in])
     big_insert_into_db("library", "cart", "user_id", session[:logged_in])
-    delete_db("cart", "user_id", session[:logged_in])
+    delete_db("cart", "user_id", session[:logged_in], "user_id", session[:logged_in])
     redirect("/cart/")
 end
 
@@ -173,7 +179,8 @@ end
 
 post("/cart") do 
     quote_id = params[:quote_id]
-    delete_db("cart", "quote_id", session[:logged_in])
+    delete_db("cart", "user_id", session[:logged_in], "quote_id", quote_id)
+    redirect("/cart/")
 end
 
 post("/cart/new") do 
