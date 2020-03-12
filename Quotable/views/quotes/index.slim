@@ -13,8 +13,8 @@ h1 Här under finner man de quotes som finns
         a href="/quotes/#{quote["quote_id"]}" #{quote["quote"]} 
         br
         p Pris: #{quote["price"]} quota
-        form action="/cart/new" method="post"    
-            button name="quote_id" type="submit" value="#{quote["quote_id"]}" Lägg i kundvagnen
-        br
+        -if session[:logged_in] != nil
+            form action="/cart/new" method="post"    
+                button name="quote_id" type="submit" value="#{quote["quote_id"]}" Lägg i kundvagnen
         br
 

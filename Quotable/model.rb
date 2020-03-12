@@ -37,6 +37,14 @@ def is_admin(user_id)
     end
 end
 
+def is_nil(line)
+    if line == nil
+        return true
+    else 
+        return false
+    end
+end
+
 def get_from_db(colum, table, condition = nil, value = nil)
     db = conect_to_db()
     information = db.execute("SELECT #{colum} FROM #{table}#{condition == nil ? "" : " WHERE #{condition} LIKE ?"}", value)

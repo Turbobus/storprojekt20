@@ -5,6 +5,7 @@ require "bcrypt"
 require "byebug"
 require_relative "./model.rb"
 require "sinatra/reloader"
+also_reload "./model.rb"
 enable :sessions
 db = SQLite3::Database.new("db/quotables.db")
 db.results_as_hash = true
@@ -155,7 +156,7 @@ post("/library/new") do
 end
 
 post("/quotes") do
-    session[:logged_in] = nil
+    session.destroy
     redirect("/")
 end
 
@@ -164,17 +165,21 @@ post("/quotes/new") do
     price = params[:price]
     earnings = params[:earnings]
     origin_id = params[:origin_id]
-
-    insert_into_db("quotes", "quote, price, earnings, origin_id", "?, ?, ?, ?", ["#{quote}", "#{price}", "#{earnings}", "#{origin_id}"])
-    redirect("/quotes/new/")
+    admin = is_admin(session[:logged_in])
+    if admin == true
+        insert_into_db("quotes", "quote, price, earnings, origin_id", "?, ?, ?, ?", ["#{quote}", "#{price}", "#{earnings}", "#{origin_id}"])
+    end
+        redirect("/quotes/new/")
 end
 
 post("/origin/new") do 
     person = params[:person]
     backstory = params[:backstory]
-    
-    insert_into_db("origin", "person, backstory", "?, ?", ["#{person}", "#{backstory}"])
-    redirect("/origin/new/")
+    admin = is_admin(session[:logged_in])
+    if admin == true
+        insert_into_db("origin", "person, backstory", "?, ?", ["#{person}", "#{backstory}"])
+    end
+        redirect("/origin/new/")
 end
 
 post("/cart") do 
@@ -184,9 +189,10 @@ post("/cart") do
 end
 
 post("/cart/new") do 
-    user_id = session[:logged_in]
     quote_id = params[:quote_id]
-    insert_into_db("cart", "user_id, quote_id", "?, ?", ["#{user_id}", "#{quote_id}"])
+    if is_nil(session[:logged_in]) == false
+        insert_into_db("cart", "user_id, quote_id", "?, ?", [session[:logged_in], "#{quote_id}"])
+    end
     redirect("/quotes/")
 end
 #Helper funktioner nedanför
