@@ -10,6 +10,13 @@ enable :sessions
 db = SQLite3::Database.new("db/quotables.db")
 db.results_as_hash = true
 
+before /\/(quotes\/new\/|origin\/new\/)/ do
+    admin = is_admin(session[:logged_in]) 
+    if admin == false
+        redirect("/quotes/")
+    end
+end
+
 get("/") do 
     slim(:index)
 end
@@ -33,7 +40,7 @@ end
 get("/quotes/") do
     if session[:logged_in] != nil
         username = get_from_db("username", "user", "user_id", session[:logged_in])[0]["username"]
-        admin = get_from_db("admin", "user", "user_id", session[:logged_in])[0]["admin"]
+        admin = is_admin(session[:logged_in])
     end
     quotes = get_from_db("quote_id, quote, price", "quotes")
     slim(:"quotes/index", locals:{username: username, admin: admin, quotes: quotes})
@@ -47,12 +54,7 @@ get("/quotes/:quote_id") do
 end
 
 get("/quotes/new/") do
-    admin = is_admin(session[:logged_in]) 
-    if admin == true
-        origin = get_from_db("origin_id, person, backstory", "origin")
-    else
-       redirect("/quotes/") 
-    end
+    origin = get_from_db("origin_id, person, backstory", "origin")
     slim(:"quotes/new", locals:{origin: origin})
 end
 
@@ -69,12 +71,7 @@ get("/cart/") do
 end
 
 get("/origin/new/") do 
-    admin = is_admin(session[:logged_in]) 
-    if admin == true
-       slim(:"origin/new") 
-    else
-       redirect("/quotes/") 
-    end
+    slim(:"origin/new") 
 end
 
 post("/user") do

@@ -1,7 +1,7 @@
 
 -if session[:logged_in] != nil
     h4 Du har just nu user_id #{session[:logged_in]} och användarnamn #{username}
-    -if admin == 1
+    -if admin == true
         form action="/quotes/new/" method="get"
             input type="submit" value="Admin"
     form action="/quotes" method="post"    
