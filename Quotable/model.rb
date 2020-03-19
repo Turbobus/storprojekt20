@@ -28,6 +28,19 @@ def password_checker(password, username)
     end
 end
 
+def time_checker(time_array)
+    time_array.each do |time|
+        if time_array[time_array.length - 1] - time > 60  
+            time_array.delete(time)
+        end
+    end
+    if time_array.length > 3
+        return false
+    else
+        return true
+    end
+end
+
 def is_admin(user_id)
     admin = get_from_db("admin", "user", "user_id", session[:logged_in])[0]["admin"] if session[:logged_in] != nil
     if admin == 1 

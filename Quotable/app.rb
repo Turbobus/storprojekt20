@@ -81,7 +81,13 @@ post("/user") do
     username = params[:username]
     password = params[:password]
     session[:logged_in] = nil
-
+    if session[:time_checker] == nil
+        session[:time_checker] = []
+    end
+    session[:time_checker] << Time.now.to_i
+    if time_checker(session[:time_checker]) == false
+        redirect("/Time out vänta i 60 sekunder")               #MÅSTE ändra OBS!!!!!!!!!!!!
+    end
     #Kollar ifall Användaren finns
     exist = get_from_db("username", "user", "username", username)
     if exist.empty?
