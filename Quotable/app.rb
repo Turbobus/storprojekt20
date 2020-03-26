@@ -49,6 +49,8 @@ get("/quotes/") do
         admin = is_admin(session[:logged_in])
     end
     quotes = get_from_db("quote_id, quote, price", "quotes")
+    #user_owned = join_from_db("library.quote_id, cart.quote_id", "library", "cart", "library.user_id = cart.user_id", "library.user_id", session[:logged_in])
+    
     slim(:"quotes/index", locals:{username: username, admin: admin, quotes: quotes})
 end
 
@@ -56,7 +58,7 @@ get("/quotes/:quote_id") do
     quote_id = params["quote_id"]
     #Verifiering av quote_id behövs att göras så att det faktisk finns där
     quote_information = join_from_db("quote, price, earnings, person, backstory", "quotes", "origin", "quotes.origin_id = origin.origin_id", "quotes.quote_id", "#{quote_id}")[0]
-    slim(:"quotes/show", locals:{quote_information: quote_information})
+    slim(:"quotes/show", locals:{quote_information: quote_information, quote_id: quote_id})
 end
 
 get("/quotes/new/") do

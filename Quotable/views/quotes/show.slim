@@ -4,5 +4,7 @@ h2 Hur mycket du tjänar på den: #{quote_information["earnings"]} quota
 br
 h2 Vem har skrivit den: #{quote_information["person"]}
 h2 Backstory: #{quote_information["backstory"]}
-
+-if session[:logged_in] != nil
+    form action="/cart/new" method="post"    
+        button name="quote_id" type="submit" value="#{quote_id}" Lägg i kundvagnen
 
