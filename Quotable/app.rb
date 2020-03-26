@@ -17,6 +17,12 @@ before /\/(quotes\/new\/|origin\/new\/)/ do
     end
 end
 
+before /\/(user\/show\/|cart\/)/ do 
+    if session[:logged_in] == nil
+        redirect("/user/")
+    end
+end
+
 get("/") do 
     slim(:index)
 end
