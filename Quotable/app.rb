@@ -56,7 +56,10 @@ end
 
 get("/quotes/:quote_id") do
     quote_id = params["quote_id"]
-    #Verifiering av quote_id behövs att göras så att det faktisk finns där
+    found_quote = get_from_db("quote_id", "quotes", "quote_id", "quote_id")
+    if found_quote.empty?
+        redirect("/quotes/")
+    end
     quote_information = join_from_db("quote, price, earnings, person, backstory", "quotes", "origin", "quotes.origin_id = origin.origin_id", "quotes.quote_id", "#{quote_id}")[0]
     slim(:"quotes/show", locals:{quote_information: quote_information, quote_id: quote_id})
 end
