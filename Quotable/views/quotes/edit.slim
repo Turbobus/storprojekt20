@@ -1,0 +1,18 @@
+h1 Updatera eller ta bort quotes
+
+h4 _____quote_id_____________quote_________________price______________earnigns_____________origin_id
+-quotes.each do |quote|
+    form action="/quotes/edit/update" method="post"    
+        <input type="number" name="new_quote_id" value="#{quote["quote_id"]}">
+        <input type="text" name="new_quote" value="#{quote["quote"]}">
+        <input type="number" name="new_price" value="#{quote["price"]}">
+        <input type="number" name="new_earnings" value="#{quote["earnings"]}">
+        <input type="number" name="new_origin_id" value="#{quote["origin_id"]}">
+        button name="update_button" type="submit" value="#{quote["quote_id"]}" Updatera       
+    form action="/quotes/edit/delete" method="post"
+        button name="delete_button" type="submit" value="#{quote["quote_id"]}" Delete
+    br
+     
+    
+    
+    

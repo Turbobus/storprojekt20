@@ -12,7 +12,7 @@ db.results_as_hash = true
 include Model
 
 
-before /\/(quotes\/new\/|origin\/new\/)/ do
+before /\/(quotes\/new\/|origin\/new\/|quotes\/edit\/|quotes\/edit\/update|quotes\/edit\/delete)/ do
     admin = is_admin(session[:logged_in]) 
     if admin == false
         redirect("/quotes/")
@@ -54,6 +54,11 @@ get("/quotes/") do
     #user_owned = join_from_db("library.quote_id, cart.quote_id", "library", "cart", "library.user_id = cart.user_id", "library.user_id", session[:logged_in])
     
     slim(:"quotes/index", locals:{username: username, admin: admin, quotes: quotes})
+end
+
+get("/quotes/edit/") do
+    quotes = get_from_db("quote_id, quote, price, earnings, origin_id", "quotes")
+    slim(:"quotes/edit", locals:{quotes: quotes})
 end
 
 get("/quotes/:quote_id") do
@@ -185,7 +190,23 @@ post("/quotes/new") do
     if admin == true
         insert_into_db("quotes", "quote, price, earnings, origin_id", "?, ?, ?, ?", ["#{quote}", "#{price}", "#{earnings}", "#{origin_id}"])
     end
-        redirect("/quotes/new/")
+    redirect("/quotes/new/")
+end
+
+post("/quotes/edit/update") do
+    quote_id = params[:update_button]
+    new_quote = params[:new_quote]
+    new_price = params[:new_price]
+    new_earnings = params[:new_earnings]
+    new_origin_id = params[:new_origin_id]
+    update_db("quotes", "quote = '#{new_quote}', price = #{new_price}, earnings = #{new_earnings}, origin_id = #{new_origin_id}", "quote_id", "#{quote_id}")
+    redirect("/quotes/edit/")
+end
+
+post("/quotes/edit/delete") do
+    quote_id = params[:delete_button]
+    delete_db("quotes", "quote_id", "#{quote_id}", "quote_id", "#{quote_id}")
+    redirect("/quotes/edit/")
 end
 
 post("/origin/new") do 
@@ -211,4 +232,4 @@ post("/cart/new") do
     end
     redirect("/quotes/")
 end
-#Helper funktioner nedanför
+
