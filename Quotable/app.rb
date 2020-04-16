@@ -9,6 +9,8 @@ also_reload "./model.rb"
 enable :sessions
 db = SQLite3::Database.new("db/quotables.db")
 db.results_as_hash = true
+include Model
+
 
 before /\/(quotes\/new\/|origin\/new\/)/ do
     admin = is_admin(session[:logged_in]) 
