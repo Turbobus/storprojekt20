@@ -5,6 +5,9 @@ br
 h2 Vem har skrivit den: #{quote_information["person"]}
 h2 Backstory: #{quote_information["backstory"]}
 -if session[:logged_in] != nil
-    form action="/cart/new" method="post"    
-        button name="quote_id" type="submit" value="#{quote_id}" Lägg i kundvagnen
+    -if owned = false
+        form action="/cart/new" method="post"    
+            button name="quote_id" type="submit" value="#{quote_id}" Lägg i kundvagnen
+    -else
+    p Du har redan denna quote i kundvagnen eller bibloteket
 

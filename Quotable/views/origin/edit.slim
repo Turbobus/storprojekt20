@@ -1,0 +1,12 @@
+h1 Updatera eller ta bort origins
+
+h4 _____origin_id_____________person______________backstory
+-origins.each do |origin|
+    form action="/origin/edit/update" method="post"    
+        <input type="number" name="new_origin_id" value="#{origin["origin_id"]}">
+        <input type="text" name="new_person" value="#{origin["person"]}">
+        <input type="text" name="new_backstory" value="#{origin["backstory"]}">
+
+        button name="update_button" type="submit" value="#{origin["origin_id"]}" Updatera       
+
+    br

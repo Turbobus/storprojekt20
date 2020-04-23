@@ -12,7 +12,7 @@ db.results_as_hash = true
 include Model
 
 
-before /\/(quotes\/new\/|origin\/new\/|quotes\/edit\/|quotes\/edit\/update|quotes\/edit\/delete)/ do
+before /\/(quotes\/new\/|origin\/new\/|quotes\/edit\/|quotes\/edit\/update|quotes\/edit\/delete|origin\/edit\/|origin\/edit\/update)/ do
     admin = is_admin(session[:logged_in]) 
     if admin == false
         redirect("/quotes/")
@@ -63,12 +63,20 @@ end
 
 get("/quotes/:quote_id") do
     quote_id = params["quote_id"]
-    found_quote = get_from_db("quote_id", "quotes", "quote_id", "quote_id")
+    found_quote = get_from_db("quote_id", "quotes", "quote_id", "#{quote_id}")
     if found_quote.empty?
         redirect("/quotes/")
     end
+    owned_quote = get_from_db("quote_id", "library", "quote_id", "#{quote_id}")
+    have_in_cart = get_from_db("quote_id", "cart", "quote_id", "#{quote_id}")
+    if owned_quote.empty? || have_in_cart.empty?
+        owned = false
+    else
+        owned = true
+    end
+
     quote_information = join_from_db("quote, price, earnings, person, backstory", "quotes", "origin", "quotes.origin_id = origin.origin_id", "quotes.quote_id", "#{quote_id}")[0]
-    slim(:"quotes/show", locals:{quote_information: quote_information, quote_id: quote_id})
+    slim(:"quotes/show", locals:{quote_information: quote_information, quote_id: quote_id, owned: owned})
 end
 
 get("/quotes/new/") do
@@ -90,6 +98,11 @@ end
 
 get("/origin/new/") do 
     slim(:"origin/new") 
+end
+
+get("/origin/edit/") do 
+    origins = get_from_db("origin_id, person, backstory", "origin")
+    slim(:"origin/edit", locals:{origins: origins})
 end
 
 post("/user") do
@@ -203,12 +216,6 @@ post("/quotes/edit/update") do
     redirect("/quotes/edit/")
 end
 
-post("/quotes/edit/delete") do
-    quote_id = params[:delete_button]
-    delete_db("quotes", "quote_id", "#{quote_id}", "quote_id", "#{quote_id}")
-    redirect("/quotes/edit/")
-end
-
 post("/origin/new") do 
     person = params[:person]
     backstory = params[:backstory]
@@ -217,6 +224,20 @@ post("/origin/new") do
         insert_into_db("origin", "person, backstory", "?, ?", ["#{person}", "#{backstory}"])
     end
         redirect("/origin/new/")
+end
+
+post("/origin/edit/update") do
+    origin_id = params[:update_button]
+    new_person = params[:new_person]
+    new_backstory = params[:new_backstory]
+    update_db("origin", "person = '#{new_person}', backstory = '#{new_backstory}'", "origin_id", "#{origin_id}")
+    redirect("/origin/edit/")
+end
+
+post("/origin/edit/delete") do
+    origin_id = params[:delete_button]
+    delete_db("origin", "origin_id", "#{origin_id}", "origin_id", "#{origin_id}")
+    redirect("/origin/edit/")
 end
 
 post("/cart") do 
