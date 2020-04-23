@@ -67,14 +67,15 @@ get("/quotes/:quote_id") do
     if found_quote.empty?
         redirect("/quotes/")
     end
-    owned_quote = get_from_db("quote_id", "library", "quote_id", "#{quote_id}")
-    have_in_cart = get_from_db("quote_id", "cart", "quote_id", "#{quote_id}")
-    if owned_quote.empty? || have_in_cart.empty?
-        owned = false
-    else
+    owned_quote = get_from_db("quote_id", "library", "quote_id", "#{quote_id}")[0]
+    have_in_cart = get_from_db("quote_id", "cart", "quote_id", "#{quote_id}")[0]
+    p owned_quote
+    if is_nil(owned_quote) == false || is_nil(have_in_cart) == false
         owned = true
+    else
+        owned = false
     end
-
+    p owned
     quote_information = join_from_db("quote, price, earnings, person, backstory", "quotes", "origin", "quotes.origin_id = origin.origin_id", "quotes.quote_id", "#{quote_id}")[0]
     slim(:"quotes/show", locals:{quote_information: quote_information, quote_id: quote_id, owned: owned})
 end
@@ -216,6 +217,12 @@ post("/quotes/edit/update") do
     redirect("/quotes/edit/")
 end
 
+post("/quotes/edit/delete") do
+    quote_id = params[:delete_button]
+    delete_db("quotes", "quote_id", "#{quote_id}", "quote_id", "#{quote_id}")
+    redirect("/quotes/edit/")
+end
+
 post("/origin/new") do 
     person = params[:person]
     backstory = params[:backstory]
@@ -234,11 +241,6 @@ post("/origin/edit/update") do
     redirect("/origin/edit/")
 end
 
-post("/origin/edit/delete") do
-    origin_id = params[:delete_button]
-    delete_db("origin", "origin_id", "#{origin_id}", "origin_id", "#{origin_id}")
-    redirect("/origin/edit/")
-end
 
 post("/cart") do 
     quote_id = params[:quote_id]
