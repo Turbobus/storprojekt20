@@ -63,13 +63,7 @@ get("/quotes/:quote_id") do
     if found_quote.empty?
         redirect("/quotes/")
     end
-    owned_quote = get_from_db("quote_id", "library", "quote_id", "#{quote_id}", "user_id", "#{session[:logged_in]}")[0]
-    have_in_cart = get_from_db("quote_id", "cart", "quote_id", "#{quote_id}", "user_id", "#{session[:logged_in]}")[0]
-    if is_nil(owned_quote) == false || is_nil(have_in_cart) == false
-        owned = true
-    else
-        owned = false
-    end
+    owned = owned_quote(quote_id, session[:logged_in])
     quote_information = join_from_db("quote, price, earnings, person, backstory", "quotes", "origin", "quotes.origin_id = origin.origin_id", "quotes.quote_id", "#{quote_id}")[0]
     slim(:"quotes/show", locals:{quote_information: quote_information, quote_id: quote_id, owned: owned})
 end
@@ -263,16 +257,12 @@ end
 
 post("/cart/new") do 
     quote_id = params[:quote_id]
-    if is_nil(session[:logged_in]) == false   
-        owned_quote = get_from_db("quote_id", "library", "quote_id", "#{quote_id}", "user_id", "#{session[:logged_in]}")[0]
-        have_in_cart = get_from_db("quote_id", "cart", "quote_id", "#{quote_id}", "user_id", "#{session[:logged_in]}")[0]
-        if is_nil(owned_quote) == false || is_nil(have_in_cart) == false
-            session[:special_error] = [quote_id, "(Du äger redan denna quote eller har den i kundvagnen)"]
-            redirect("/quotes/") 
-        else
-            session[:special_error] = nil
-            insert_into_db("cart", "user_id, quote_id", "?, ?", [session[:logged_in], "#{quote_id}"])
-        end
+    if owned_quote(quote_id, session[:logged_in]) == false
+        session[:special_error] = nil
+        insert_into_db("cart", "user_id, quote_id", "?, ?", [session[:logged_in], "#{quote_id}"])
+    else 
+        session[:special_error] = [quote_id, "(Du äger redan denna quote eller har den i kundvagnen)"]
+        redirect("/quotes/")
     end
     redirect("/quotes/")
 end
