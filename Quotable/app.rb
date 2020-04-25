@@ -41,7 +41,6 @@ get("/user/show/") do
     user_library = join_from_db("quotes.quote_id, quote, earnings", "quotes", "library", "library.quote_id = quotes.quote_id", "library.user_id", session[:logged_in])
     said_quote = session[:said_quote]
     session[:said_quote] = nil
-
     slim(:"user/show", locals:{user_library: user_library, said_quote: said_quote})
 end
 
@@ -51,7 +50,6 @@ get("/quotes/") do
         admin = is_admin(session[:logged_in])
     end
     quotes = get_from_db("quote_id, quote, price", "quotes")
-    #user_owned = join_from_db("library.quote_id, cart.quote_id", "library", "cart", "library.user_id = cart.user_id", "library.user_id", session[:logged_in])
     
     slim(:"quotes/index", locals:{username: username, admin: admin, quotes: quotes})
 end
@@ -69,13 +67,11 @@ get("/quotes/:quote_id") do
     end
     owned_quote = get_from_db("quote_id", "library", "quote_id", "#{quote_id}")[0]
     have_in_cart = get_from_db("quote_id", "cart", "quote_id", "#{quote_id}")[0]
-    p owned_quote
     if is_nil(owned_quote) == false || is_nil(have_in_cart) == false
         owned = true
     else
         owned = false
     end
-    p owned
     quote_information = join_from_db("quote, price, earnings, person, backstory", "quotes", "origin", "quotes.origin_id = origin.origin_id", "quotes.quote_id", "#{quote_id}")[0]
     slim(:"quotes/show", locals:{quote_information: quote_information, quote_id: quote_id, owned: owned})
 end
@@ -127,7 +123,9 @@ post("/user") do
     password_chek = password_checker(password, username)
     
     if password_chek == true
-        session[:logged_in] = get_from_db("user_id", "user", "username", username)[0]["user_id"]
+        user_info = get_from_db("user_id, quota", "user", "username", username)[0]
+        session[:logged_in] = user_info["user_id"]
+        session[:quota] = user_info["quota"]
         redirect("/quotes/")
     else
         redirect("/Password incorrect")                  #Måste ändra OBS!!!!!!!
@@ -152,7 +150,9 @@ post("/user/new") do
 
     if exist.empty?
         insert_into_db("user", "username, password, quota", "?, ?, ?", ["#{username}", "#{controller}", 1])
-        session[:logged_in] = get_from_db("user_id", "user", "username", username)[0]["user_id"]
+        user_info = get_from_db("user_id, quota", "user", "username", username)[0]
+        session[:logged_in] = user_info["user_id"]
+        session[:quota] = user_info["quota"]
     else
         redirect("/username_exist")                                            #Måste ändra   OBS!!!!!
     end
@@ -162,7 +162,8 @@ end
 post("/user/show") do 
     quote_id = params[:quote_id]
     earnings = get_from_db("earnings", "quotes", "quote_id", quote_id)[0]["earnings"]
-    session[:said_quote] = params[:quote]       
+    session[:said_quote] = params[:quote]
+    session[:quota] += earnings       
     
     update_db("user", "quota = quota + #{earnings}", "user_id", session[:logged_in])
     redirect("/user/show/")
@@ -180,13 +181,13 @@ post("/library/new") do
     user_quota = get_from_db("quota", "user", "user_id", session[:logged_in])[0]["quota"]
 
     if total_price > user_quota
-        p "det gick inte"
         redirect("/You dont have the quota to do that")      #Måste ändra här med   OBS!!!!!!!!!!!
     end
     
     update_db("user", "quota = quota - #{total_price}", "user_id", session[:logged_in])
     big_insert_into_db("library", "cart", "user_id", session[:logged_in])
     delete_db("cart", "user_id", session[:logged_in], "user_id", session[:logged_in])
+    session[:quota] = get_from_db("quota", "user", "user_id", session[:logged_in])[0]["quota"]
     redirect("/cart/")
 end
 
@@ -250,8 +251,14 @@ end
 
 post("/cart/new") do 
     quote_id = params[:quote_id]
-    if is_nil(session[:logged_in]) == false
-        insert_into_db("cart", "user_id, quote_id", "?, ?", [session[:logged_in], "#{quote_id}"])
+    if is_nil(session[:logged_in]) == false   
+        owned_quote = get_from_db("quote_id", "library", "quote_id", "#{quote_id}", "user_id", "#{session[:logged_in]}")[0]
+        have_in_cart = get_from_db("quote_id", "cart", "quote_id", "#{quote_id}", "user_id", "#{session[:logged_in]}")[0]
+        if is_nil(owned_quote) == false || is_nil(have_in_cart) == false
+            redirect("/quotes/") #Måste ha ett felmedelande om att man redan har quoten
+        else
+            insert_into_db("cart", "user_id, quote_id", "?, ?", [session[:logged_in], "#{quote_id}"])
+        end
     end
     redirect("/quotes/")
 end

@@ -58,9 +58,13 @@ module Model
         end
     end
 
-    def get_from_db(colum, table, condition = nil, value = nil)
+    def get_from_db(colum, table, condition = nil, value = nil, condition2 = nil, value2 = nil)
         db = conect_to_db()
-        information = db.execute("SELECT #{colum} FROM #{table}#{condition == nil ? "" : " WHERE #{condition} LIKE ?"}", value)
+        if condition2 == nil
+            information = db.execute("SELECT #{colum} FROM #{table}#{condition == nil ? "" : " WHERE #{condition} LIKE ?"}", value)
+        else 
+            information = db.execute("SELECT #{colum} FROM #{table} WHERE #{condition} LIKE ? AND #{condition2} LIKE ?", value, value2)
+        end
         return information
     end
 

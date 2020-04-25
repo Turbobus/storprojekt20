@@ -6,10 +6,15 @@ html lang="sv"
         meta http-equiv="X-UA-Compatible" content="ie=edge"/
         title Quotable
     body
-        a href="/" Startsida
-        -if session[:logged_in] != nil
-            p Du är just nu inloggad 
-            a href="/cart/" Din kundvagn
+        nav
+            a href="/" Startsida
             br
-            a href="/user/show/" Ditt biblotek
+            a href="/quotes/" Till quotesen
+
+            -if session[:logged_in] != nil
+                p Du är just nu inloggad och du har: #{session[:quota]} quota
+                a href="/cart/" Din kundvagn
+                br
+                a href="/user/show/" Ditt biblotek
+                
         ==yield
