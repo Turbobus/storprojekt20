@@ -3,6 +3,7 @@ form action="/user" method="post"
     <input type="text" name="username" placeholder="Användarnamn" required>
     <input type="password" name="password" placeholder="Lösenord" required>
     input type="submit" value="Logga in"
+p #{session[:error_message]}
 
 h3 Gå tillbaka
 form action="/" method="get"    

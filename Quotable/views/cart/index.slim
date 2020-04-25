@@ -11,3 +11,4 @@ h2 Här under hittar du de quotes du har laggt i kundvagnen
 form action="/library/new" method="post"
     p Totalt pris: #{total_price} quota
     button name="user_cart" type="submit" value="#{quote_ids}"  Köp allt i kundvagnen
+p #{session[:error_message]}

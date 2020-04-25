@@ -6,6 +6,8 @@ form action="/user/new" method="post"
     <input type="password" name="password" placeholder="Lösenord" required>
     <input type="password" name="password_verify" placeholder="Verifiera lösenord"required>
     input type="submit" value="Registrera dig"
+p #{session[:error_message]}
+
 
 h3 Gå tillbaka
 form action="/" method="get"    

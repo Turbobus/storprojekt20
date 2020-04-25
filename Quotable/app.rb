@@ -7,8 +7,6 @@ require_relative "./model.rb"
 require "sinatra/reloader"
 also_reload "./model.rb"
 enable :sessions
-db = SQLite3::Database.new("db/quotables.db")
-db.results_as_hash = true
 include Model
 
 
@@ -65,8 +63,8 @@ get("/quotes/:quote_id") do
     if found_quote.empty?
         redirect("/quotes/")
     end
-    owned_quote = get_from_db("quote_id", "library", "quote_id", "#{quote_id}")[0]
-    have_in_cart = get_from_db("quote_id", "cart", "quote_id", "#{quote_id}")[0]
+    owned_quote = get_from_db("quote_id", "library", "quote_id", "#{quote_id}", "user_id", "#{session[:logged_in]}")[0]
+    have_in_cart = get_from_db("quote_id", "cart", "quote_id", "#{quote_id}", "user_id", "#{session[:logged_in]}")[0]
     if is_nil(owned_quote) == false || is_nil(have_in_cart) == false
         owned = true
     else
@@ -111,12 +109,15 @@ post("/user") do
     end
     session[:time_checker] << Time.now.to_i
     if time_checker(session[:time_checker]) == false
-        redirect("/Time out vänta i 60 sekunder")               #MÅSTE ändra OBS!!!!!!!!!!!!
+        session[:error_message] = "Time out, vänta i 60 sekunder innan du försöker igen"
+        redirect("/user/")               
     end
+
     #Kollar ifall Användaren finns
     exist = get_from_db("username", "user", "username", username)
     if exist.empty?
-        redirect("/Användare existerar inte")               #MÅSTE ändra OBS!!!!!!!!!!!!
+        session[:error_message] = "Användarnamnet eller lösenordet är fel, försök igen"
+        redirect("/user/")
     end
 
     #Hämtar användarens lödsenord för jämförelse
@@ -128,9 +129,11 @@ post("/user") do
         session[:quota] = user_info["quota"]
         session[:admin] = user_info["admin"]
         session[:username] = username
+        session[:error_message] = nil
         redirect("/quotes/")
     else
-        redirect("/Password incorrect")                  #Måste ändra OBS!!!!!!!
+        session[:error_message] = "Användarnamnet eller lösenordet är fel, försök igen"
+        redirect("/user/")
     end
 end
 
@@ -140,12 +143,14 @@ post("/user/new") do
     password_verify = params[:password_verify]
 
     controller = input_chek(username, password, password_verify)
-    if  controller == "input_true"
-        redirect("/empty_or_do_not_match")                                      #Måste ändra   OBS!!!!!
+    if  controller == "input_false"
+        session[:error_message] = "Lösenorden matchar inte"
+        redirect("/user/new/")
     end
     
-    if controller == "password_true"
-        redirect("/only_integer_or_letter_under_lengt3")         #OBS ska ändras   Blir här när det bara är siffror eller bara bokstäver eller när det är under 4 tecken
+    if controller == "password_false"
+        session[:error_message] = "Lösenordet måste innehålla minst 1 siffra eller bokstav och vara mellan 4-20 karaktärer lång"
+        redirect("/user/new/")
     end
 
     exist = get_from_db("username", "user", "username", username) 
@@ -156,8 +161,10 @@ post("/user/new") do
         session[:logged_in] = user_info["user_id"]
         session[:quota] = user_info["quota"]
         session[:username] = username
+        session[:error_message] = nil
     else
-        redirect("/username_exist")                                            #Måste ändra   OBS!!!!!
+        session[:error_message] = "Användarnamnet existerar redan"
+        redirect("/user/new/")
     end
     redirect("/quotes/")
 end
@@ -184,13 +191,15 @@ post("/library/new") do
     user_quota = get_from_db("quota", "user", "user_id", session[:logged_in])[0]["quota"]
 
     if total_price > user_quota
-        redirect("/You dont have the quota to do that")      #Måste ändra här med   OBS!!!!!!!!!!!
+        session[:error_message] = "Du har inte tillräkligt med Quota"
+        redirect("/cart/")
     end
     
     update_db("user", "quota = quota - #{total_price}", "user_id", session[:logged_in])
     big_insert_into_db("library", "cart", "user_id", session[:logged_in])
     delete_db("cart", "user_id", session[:logged_in], "user_id", session[:logged_in])
     session[:quota] = get_from_db("quota", "user", "user_id", session[:logged_in])[0]["quota"]
+    session[:error_message] = nil
     redirect("/cart/")
 end
 
@@ -258,11 +267,12 @@ post("/cart/new") do
         owned_quote = get_from_db("quote_id", "library", "quote_id", "#{quote_id}", "user_id", "#{session[:logged_in]}")[0]
         have_in_cart = get_from_db("quote_id", "cart", "quote_id", "#{quote_id}", "user_id", "#{session[:logged_in]}")[0]
         if is_nil(owned_quote) == false || is_nil(have_in_cart) == false
-            redirect("/quotes/") #Måste ha ett felmedelande om att man redan har quoten
+            session[:special_error] = [quote_id, "(Du äger redan denna quote eller har den i kundvagnen)"]
+            redirect("/quotes/") 
         else
+            session[:special_error] = nil
             insert_into_db("cart", "user_id, quote_id", "?, ?", [session[:logged_in], "#{quote_id}"])
         end
     end
     redirect("/quotes/")
 end
-

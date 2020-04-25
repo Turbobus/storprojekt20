@@ -4,6 +4,10 @@ h1 Här under finner man de quotes som finns
         a href="/quotes/#{quote["quote_id"]}" #{quote["quote"]} 
         br
         p Pris: #{quote["price"]} quota
+        -if session[:special_error] != nil
+            -p session[:special_error][0]
+            -if session[:special_error][0] == "#{quote["quote_id"]}"
+                p #{session[:special_error][1]}
         -if session[:logged_in] != nil
             form action="/cart/new" method="post"    
                 button name="quote_id" type="submit" value="#{quote["quote_id"]}" Lägg i kundvagnen

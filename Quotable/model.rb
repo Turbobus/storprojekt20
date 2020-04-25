@@ -8,13 +8,13 @@ module Model
 
     def input_chek(username, password, password_verify)
         if password != password_verify || username == "" || password == "" 
-            return "input_true"                                    
+            return "input_false"                                    
         end
 
         only_integer = password.scan(/\D/).empty?
         only_letters = password.scan(/\d/).empty? 
-        if only_integer == true || only_letters == true || password.length < 4
-            return "password_true"   
+        if only_integer == true || only_letters == true || password.length < 4 || password.length > 20
+            return "password_false"   
         end
         return BCrypt::Password.create(password)
     end
