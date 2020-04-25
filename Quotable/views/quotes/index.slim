@@ -5,7 +5,6 @@ h1 Här under finner man de quotes som finns
         br
         p Pris: #{quote["price"]} quota
         -if session[:special_error] != nil
-            -p session[:special_error][0]
             -if session[:special_error][0] == "#{quote["quote_id"]}"
                 p #{session[:special_error][1]}
         -if session[:logged_in] != nil

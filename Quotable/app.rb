@@ -43,13 +43,8 @@ get("/user/show/") do
 end
 
 get("/quotes/") do
-    if session[:logged_in] != nil
-        username = get_from_db("username", "user", "user_id", session[:logged_in])[0]["username"]
-        admin = is_admin(session[:logged_in])
-    end
     quotes = get_from_db("quote_id, quote, price", "quotes")
-    
-    slim(:"quotes/index", locals:{username: username, admin: admin, quotes: quotes})
+    slim(:"quotes/index", locals:{quotes: quotes})
 end
 
 get("/quotes/edit/") do
@@ -115,9 +110,7 @@ post("/user") do
     end
 
     #Hämtar användarens lödsenord för jämförelse
-    password_chek = password_checker(password, username)
-    
-    if password_chek == true
+    if password_checker(password, username) == true
         user_info = get_from_db("user_id, quota, admin", "user", "username", username)[0]
         session[:logged_in] = user_info["user_id"]
         session[:quota] = user_info["quota"]
@@ -148,7 +141,6 @@ post("/user/new") do
     end
 
     exist = get_from_db("username", "user", "username", username) 
-
     if exist.empty?
         insert_into_db("user", "username, password, quota", "?, ?, ?", ["#{username}", "#{controller}", 1])
         user_info = get_from_db("user_id, quota", "user", "username", username)[0]
@@ -176,13 +168,12 @@ end
 post("/library/new") do 
     user_cart = params[:user_cart].split('').map(&:to_i)
     prices = join_from_db("price", "quotes", "cart", "cart.quote_id = quotes.quote_id", "cart.user_id", session[:logged_in])
+    user_quota = get_from_db("quota", "user", "user_id", session[:logged_in])[0]["quota"]
     total_price = 0
     
     prices.each do |price|
         total_price += price["price"]
     end
-
-    user_quota = get_from_db("quota", "user", "user_id", session[:logged_in])[0]["quota"]
 
     if total_price > user_quota
         session[:error_message] = "Du har inte tillräkligt med Quota"
@@ -219,7 +210,7 @@ post("/quotes/edit/update") do
     new_quote = params[:new_quote]
     new_price = params[:new_price]
     new_earnings = params[:new_earnings]
-    new_origin_id = params[:new_origin_id]
+    new_origin_id = params[:new_origin_id] #OBS kolla här och se ifall detta är ett problem. Blir samma senare isåfall
     update_db("quotes", "quote = '#{new_quote}', price = #{new_price}, earnings = #{new_earnings}, origin_id = #{new_origin_id}", "quote_id", "#{quote_id}")
     redirect("/quotes/edit/")
 end
