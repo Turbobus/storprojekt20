@@ -10,11 +10,20 @@ html lang="sv"
             a href="/" Startsida
             br
             a href="/quotes/" Till quotesen
+            br
 
             -if session[:logged_in] != nil
-                p Du är just nu inloggad och du har: #{session[:quota]} quota
+                p Du är inloggad som #{session[:username]} och har: #{session[:quota]} quota
                 a href="/cart/" Din kundvagn
                 br
                 a href="/user/show/" Ditt biblotek
+                br
+                form action="/quotes" method="post"    
+                    input type="submit" value="Logga ut"
+                -if session[:admin] == 1
+                    form action="/quotes/new/" method="get"
+                        input type="submit" value="Admin"
+            -else
+                a href="/user/" Logga in
                 
         ==yield

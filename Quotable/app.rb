@@ -123,9 +123,11 @@ post("/user") do
     password_chek = password_checker(password, username)
     
     if password_chek == true
-        user_info = get_from_db("user_id, quota", "user", "username", username)[0]
+        user_info = get_from_db("user_id, quota, admin", "user", "username", username)[0]
         session[:logged_in] = user_info["user_id"]
         session[:quota] = user_info["quota"]
+        session[:admin] = user_info["admin"]
+        session[:username] = username
         redirect("/quotes/")
     else
         redirect("/Password incorrect")                  #Måste ändra OBS!!!!!!!
@@ -153,6 +155,7 @@ post("/user/new") do
         user_info = get_from_db("user_id, quota", "user", "username", username)[0]
         session[:logged_in] = user_info["user_id"]
         session[:quota] = user_info["quota"]
+        session[:username] = username
     else
         redirect("/username_exist")                                            #Måste ändra   OBS!!!!!
     end

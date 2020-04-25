@@ -1,5 +1,8 @@
 h1 Updatera eller ta bort quotes
 
+form action="/quotes/new/" method="get"
+    input type="submit" value="Gå tillbaka till där man lägger till nya quotes"
+
 h4 _____quote_id_____________quote_________________price______________earnigns_____________origin_id
 -quotes.each do |quote|
     form action="/quotes/edit/update" method="post"    
@@ -12,6 +15,9 @@ h4 _____quote_id_____________quote_________________price______________earnigns__
     form action="/quotes/edit/delete" method="post"
         button name="delete_button" type="submit" value="#{quote["quote_id"]}" Delete
     br
+
+
+
      
     
     

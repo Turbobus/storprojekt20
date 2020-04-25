@@ -1,5 +1,10 @@
 h1 Updatera eller ta bort origins
 
+form action="/quotes/new/" method="get"
+    input type="submit" value="Gå tillbaka till där man lägger till nya quotes"
+form action="/origin/new/" method="get"
+    input type="submit" value="Gå tillbaka till där man lägger till nya origins"
+
 h4 _____origin_id_____________person______________backstory
 -origins.each do |origin|
     form action="/origin/edit/update" method="post"    

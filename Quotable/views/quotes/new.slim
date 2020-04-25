@@ -1,5 +1,3 @@
-h1 Du ska bara vara här ifall du är Admin. Ifall du inte är det kontakta någon trevlig person
-
 h2 Skapa en ny quote
 form action="/quotes/new" method="post"    
     <input type="text" name="quote" placeholder="Quote" required> 
@@ -14,10 +12,19 @@ form action="/quotes/new" method="post"
     br
     input type="submit" value="Lägg ut ny quote"
 
-h2 Skapa en ny origin
-form action="/origin/new/" method="get"
-    input type="submit" value="Gå till stället där du skapar nya origins"
-    
+
+h3 Updatera befintliga quotes
+form action="/quotes/edit/" method="get"
+    input type="submit" value="Gå till sidan där du updaterar quotes"
+
 h2 Här kan du se de origins som redan finns och ta reda på dess ID
 -origin.each do |origin|
     li = "Person: #{origin["person"]} | ID: #{origin["origin_id"]} | Backstory: #{origin["backstory"]}" 
+
+h2 Skapa en ny origin
+form action="/origin/new/" method="get"
+    input type="submit" value="Gå till stället där du skapar nya origins"
+
+h2 Updatera befintliga origins
+form action="/origin/edit/" method="get"
+    input type="submit" value="Gå till sidan där du updaterar origins"

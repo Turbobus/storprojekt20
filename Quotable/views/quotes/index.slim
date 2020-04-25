@@ -1,12 +1,3 @@
-
--if session[:logged_in] != nil
-    h4 Du har just nu user_id #{session[:logged_in]} och användarnamn #{username}
-    -if admin == true
-        form action="/quotes/new/" method="get"
-            input type="submit" value="Admin"
-    form action="/quotes" method="post"    
-        input type="submit" value="Logga ut"
-
 h1 Här under finner man de quotes som finns
 -quotes.each do |quote|
     section
