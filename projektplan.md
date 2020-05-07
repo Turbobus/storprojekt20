@@ -14,16 +14,16 @@ Mappar:
 
 -public: Mappen där css, javascript och bilder
 
-views: Mappen där alla olika slimfiler ligger. Följer RESTFUL-routes.
+-views: Mappen där alla olika slimfiler ligger. Följer RESTFUL-routes.
 
-yardoc: Mappen innehåller mer filer till yardocprogrammet
+-yardoc: Mappen innehåller mer filer till yardocprogrammet
 
 Filer:
 
-quotables.db: Är själva databasen där all databas data sparas
+-quotables.db: Är själva databasen där all databas data sparas
 
-.slim: Är alla de olika slimfilerna som visar de olika sidorna genom att skapa html
+-.slim: Är alla de olika slimfilerna som visar de olika sidorna genom att skapa html
 
-app.rb: Filen där sessions och alla GET/POST routes ligger. Anropar funktioner från model .rb
+-app.rb: Filen där sessions och alla GET/POST routes ligger. Anropar funktioner från model .rb
 
-model.rb: Filen där alla funktioner som tar kontakt med databasen finns. Funktionerna anropas av app.rb
+-model.rb: Filen där alla funktioner som tar kontakt med databasen finns. Funktionerna anropas av app.rb
