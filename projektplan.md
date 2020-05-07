@@ -7,14 +7,23 @@ En webbshop där användare ska kunna ha en egen kundvagn. Ifall man inte är in
 ![ER-diagram](https://github.com/itggot-Joel-Hilmersson/storprojekt20/blob/master/ER-diagram%20quotable%20Joel%20Hilmersson.PNG)
 ## 4. Arkitektur (Beskriv filer och mappar - vad gör/inehåller de?)
 Mappar:
+
 db: Mappen där databasen ligger
+
 doc: Mappen tillhörande yardoc
+
 public: Mappen där css, javascript och bilder
+
 views: Mappen där alla olika slimfiler ligger. Följer RESTFUL-routes.
+
 yardoc: Mappen innehåller mer filer till yardocprogrammet
 
 Filer:
+
 quotables.db: Är själva databasen där all databas data sparas
+
 .slim: Är alla de olika slimfilerna som visar de olika sidorna genom att skapa html
+
 app.rb: Filen där sessions och alla GET/POST routes ligger. Anropar funktioner från model .rb
+
 model.rb: Filen där alla funktioner som tar kontakt med databasen finns. Funktionerna anropas av app.rb
