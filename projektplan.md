@@ -8,11 +8,11 @@ En webbshop där användare ska kunna ha en egen kundvagn. Ifall man inte är in
 ## 4. Arkitektur (Beskriv filer och mappar - vad gör/inehåller de?)
 Mappar:
 
-db: Mappen där databasen ligger
+-db: Mappen där databasen ligger
 
-doc: Mappen tillhörande yardoc
+-doc: Mappen tillhörande yardoc
 
-public: Mappen där css, javascript och bilder
+-public: Mappen där css, javascript och bilder
 
 views: Mappen där alla olika slimfiler ligger. Följer RESTFUL-routes.
 
