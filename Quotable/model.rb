@@ -75,7 +75,7 @@ module Model
     # @return [Boolean] based on if the user is an admin
     #
     def is_admin(user_id)
-        admin = get_from_db("admin", "user", "user_id", session[:logged_in])[0]["admin"] if session[:logged_in] != nil
+        admin = get_from_db("admin", "user", "user_id", user_id)[0]["admin"] if user_id != nil
         if admin == 1 
             return true
         else
